@@ -21,13 +21,14 @@
 package cmd
 
 import (
-	"fmt"
+	"database/sql"
 
 	"github.com/spf13/cobra"
-	"github.com/nanobox-io/golang-scribble"
+	_ "github.com/mattn/go-sqlite3"
 
-    "../lib"
-	"strconv"
+    "teamworkgo/lib"
+    "teamworkgo/db"
+	"log"
 )
 
 // buildCacheCmd represents the buildCache command
@@ -38,35 +39,33 @@ var buildCacheCmd = &cobra.Command{
 	all of the the Projects and then Task Lists associated with a Project`,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		db, _ := scribble.New("/tmp/teamworkgo/.cache", nil)
-
 		projects := lib.GetAllProjects()
 
+		//Initialize db
+		database, err := sql.Open("sqlite3", "./twgo.db")
+		if err != nil {
+			log.Fatal(err)
+		}
+
 		for _, project := range projects.ProjectBeanList {
+
+			db.PutProject(project, database)
+
 			taskLists, _ := lib.GetTaskLists(project.Id)
-			//print the Project name & id
-			fmt.Println(project.Id + " - " + project.Name)
-
 			for _, tasklist := range taskLists.ProjectBeanList {
-				tasks, _ := lib.GetTasks(tasklist.Id)
-				//printing each of the task lists on a project
-				fmt.Println("  " + tasklist.Id + " - " + tasklist.Name)
 
+				db.PutTaskList(tasklist, project, database)
+
+				tasks, _ := lib.GetTasks(tasklist.Id)
 				for _, task := range tasks.TaskBeanList {
-					t := strconv.Itoa(task.Id)
-					//Printing each of the tasks on a task list
-					fmt.Println("    " + t + " - " + task.ProjectName)
+					db.PutTask(task, tasklist, project, database)
 				}
 			}
 		}
 
-		for _, name := range projects.ProjectBeanList {
-			db.Write("teamwork", name.Name, "Placeholder for Task Lists2")
-		}
-
-		fmt.Println(projects)
 	},
 }
+
 
 func init() {
 	RootCmd.AddCommand(buildCacheCmd)

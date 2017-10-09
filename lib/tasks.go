@@ -23,6 +23,7 @@ type Tasks struct {
 
 type Task struct {
 	Id          int    `json:"id"`
+	Name        string `json:"content"`
 	ProjectName string `json:"project-name"`
 }
 

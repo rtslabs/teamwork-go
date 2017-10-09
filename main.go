@@ -18,10 +18,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package teamworkgo
+package main
 
-import "./cmd"
+import (
+	"teamworkgo/cmd"
+)
 
 func main() {
+
 	cmd.Execute()
 }
