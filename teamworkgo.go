@@ -20,7 +20,7 @@
 
 package teamworkgo
 
-import "teamworkgo/cmd"
+import "./cmd"
 
 func main() {
 	cmd.Execute()

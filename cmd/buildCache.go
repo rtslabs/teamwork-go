@@ -26,7 +26,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/nanobox-io/golang-scribble"
 
-    "teamworkgo/lib"
+    "../lib"
 	"strconv"
 )
 
