@@ -27,29 +27,38 @@ import (
 	"github.com/nanobox-io/golang-scribble"
 
     "teamworkgo/lib"
+	"strconv"
 )
 
 // buildCacheCmd represents the buildCache command
 var buildCacheCmd = &cobra.Command{
 	Use:   "buildCache",
 	Short: "Build the Projects, Task lists and Tasks to local cache",
-	Long: `Long description`,
+	Long: `Warning: This call can be quite expensive since we need to query
+	all of the the Projects and then Task Lists associated with a Project`,
 	Run: func(cmd *cobra.Command, args []string) {
 
 		db, _ := scribble.New("/tmp/teamworkgo/.cache", nil)
 
 		projects := lib.GetAllProjects()
+
 		for _, project := range projects.ProjectBeanList {
 			taskLists, _ := lib.GetTaskLists(project.Id)
-			fmt.Println(project.Name)
-			for _, taskList := range taskLists.ProjectBeanList {
-				//tasks := lib.GetTask(taskList.Id)
-				fmt.Println(taskList.Name)
-			}
+			//print the Project name & id
+			fmt.Println(project.Id + " - " + project.Name)
 
+			for _, tasklist := range taskLists.ProjectBeanList {
+				tasks, _ := lib.GetTasks(tasklist.Id)
+				//printing each of the task lists on a project
+				fmt.Println("  " + tasklist.Id + " - " + tasklist.Name)
+
+				for _, task := range tasks.TaskBeanList {
+					t := strconv.Itoa(task.Id)
+					//Printing each of the tasks on a task list
+					fmt.Println("    " + t + " - " + task.ProjectName)
+				}
+			}
 		}
-		// TODO add task lists
-		//taskLists := lib.GetTaskLists("projects.json")
 
 		for _, name := range projects.ProjectBeanList {
 			db.Write("teamwork", name.Name, "Placeholder for Task Lists2")
