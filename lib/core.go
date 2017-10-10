@@ -7,6 +7,11 @@ import (
 	"github.com/spf13/viper"
 )
 
+type Suggest struct {
+	Text        string
+	Description string
+}
+
 var apiUrl string
 var apiKey string
 

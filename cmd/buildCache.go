@@ -21,14 +21,12 @@
 package cmd
 
 import (
-	"database/sql"
 
 	"github.com/spf13/cobra"
 	_ "github.com/mattn/go-sqlite3"
 
     "teamworkgo/lib"
     "teamworkgo/db"
-	"log"
 )
 
 // buildCacheCmd represents the buildCache command
@@ -39,33 +37,54 @@ var buildCacheCmd = &cobra.Command{
 	all of the the Projects and then Task Lists associated with a Project`,
 	Run: func(cmd *cobra.Command, args []string) {
 
+		db.PrepareProjectsTable()
+		db.PrepareTaskListsTable()
+		db.PrepareTasksTable()
+
+		// prepare projects
 		projects := lib.GetAllProjects()
 
-		//Initialize db
-		database, err := sql.Open("sqlite3", "./twgo.db")
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		for _, project := range projects.ProjectBeanList {
-
-			db.PutProject(project, database)
-
-			taskLists, _ := lib.GetTaskLists(project.Id)
-			for _, tasklist := range taskLists.ProjectBeanList {
-
-				db.PutTaskList(tasklist, project, database)
-
-				tasks, _ := lib.GetTasks(tasklist.Id)
-				for _, task := range tasks.TaskBeanList {
-					db.PutTask(task, tasklist, project, database)
-				}
-			}
-		}
-
+		projectGenerator(projects)
 	},
 }
 
+func projectGenerator(projects *lib.Projects,) {
+	// loop over projects
+	for _, project := range projects.ProjectBeanList {
+
+		// add Project to db
+		db.PutProject(project)
+
+		// prepare tasklists
+		taskLists, _ := lib.GetTaskLists(project.Id)
+
+		taskListGenerator(taskLists, project)
+	}
+}
+
+func taskListGenerator(taskLists *lib.TaskLists, project lib.Project) {
+	// loop over tasklists
+	for _, tasklist := range taskLists.ProjectBeanList {
+
+		// add task list to db
+		db.PutTaskList(tasklist, project)
+
+		// prepare tasks
+		//tasks, _ := lib.GetTasks(tasklist.Id)
+
+		//taskGenerator(tasks, tasklist, project)
+
+	}
+}
+
+func taskGenerator(tasks *lib.Tasks, tasklist lib.TaskList, project lib.Project) {
+	//loop over tasks
+	for _, task := range tasks.TaskBeanList {
+
+		//add tasks to db
+		db.PutTask(task, tasklist, project)
+	}
+}
 
 func init() {
 	RootCmd.AddCommand(buildCacheCmd)

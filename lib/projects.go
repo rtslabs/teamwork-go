@@ -17,7 +17,7 @@ type Project struct {
 }
 
 func GetProject(projectId string) (*Project, error) {
-	resp := GetRequest("prjects/" + projectId)
+	resp := GetRequest("projects/" + projectId)
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
