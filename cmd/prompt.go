@@ -23,9 +23,11 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/c-bata/go-prompt"
 	"github.com/spf13/cobra"
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/abiosoft/ishell"
+	"teamworkgo/db"
+	"log"
 )
 
 // promptCmd represents the prompt command
@@ -39,32 +41,34 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("prompt called")
-		fmt.Println("Please select table.")
-		//t := prompt.Input("> ", completer)
-		//fmt.Println("You selected " + t)
+		shell := ishell.New()
+
+		shell = registerLs(shell)
+
+		shell.Run()
 	},
 }
 
-func completer(d prompt.Document) {
-
-	//projects := db.GetProjects()
-	//var id string
-	//var projectName string
-
-	//suggestions := []*lib.Suggest{}
-	//
-	//for projects.Next() {
-	//	projects.Scan(&id, &projectName)
-	//	row := new(lib.Suggest)
-	//	row.Text = id
-	//	row.Description = projectName
-	//	suggestions = append(suggestions, row)
-	//}
-	//
-	//
-	//s := suggestions
-	//return prompt.FilterHasPrefix(s, d.GetWordBeforeCursor(), true)
+func registerLs(shell *ishell.Shell) *ishell.Shell {
+	shell.AddCmd(&ishell.Cmd{
+		Name: "ls",
+		Help: "list projects and items",
+		Func: func(c *ishell.Context) {
+			rows := db.GetProjects()
+			for rows.Next() {
+				var id string
+				var projectName string
+				if err := rows.Scan(&id, &projectName); err != nil {
+					log.Fatal(err)
+				}
+				fmt.Printf("%s - %s\n", id, projectName)
+			}
+			if err := rows.Err(); err != nil {
+				log.Fatal(err)
+			}
+		},
+	})
+	return shell
 }
 
 func init() {
