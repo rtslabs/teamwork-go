@@ -30,17 +30,36 @@ import (
 	"os/exec"
 	"teamworkgo/db"
 	"strings"
+	"strconv"
 )
 
+const (
+	Root = iota
+	Projects
+	Tasklists
+	Tasks
+	Task
+)
+
+
+var state = Root
+var lsSuggestions = []prompt.Suggest{}
 var projectsSuggestions = []prompt.Suggest{}
 var taskListsSuggestions = []prompt.Suggest{}
 var taskSuggestions = []prompt.Suggest{}
 var commands = []prompt.Suggest{
 	{Text: "ls", Description: "List the current working tree"},
 	{Text: "cd", Description: "change dir"},
+	{Text: "cd ../", Description: "change dir up a level"},
+	{Text: "projects", Description: "List projects"},
+	{Text: "tasklists", Description: "List tasklists"},
+	{Text: "tasks", Description: "List tasks"},
 
 	// aliases
 	{Text: "list"},
+	{Text: "pwd"},
+	{Text: "proj"},
+	{Text: "tsk"},
 
 	// customized
 	{Text: "bash", Description: "Drop to a bash subshell"},
@@ -61,9 +80,15 @@ to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Printf("this-prompt\n")
 		fmt.Println("Please use `exit` or `Ctrl-D` to exit this program..")
-		defer fmt.Println("Bye!")
-		t := prompt.Input(">>> ", completer, prompt.OptionMaxSuggestion(20))
-		executor(t)
+		t := prompt.New(
+				executor,
+				completer,
+				prompt.OptionTitle("tw prompt"),
+				prompt.OptionPrefix(">>> "),
+				prompt.OptionInputTextColor(prompt.Yellow),
+				prompt.OptionMaxSuggestion(20),
+		)
+		t.Run()
 	},
 }
 
@@ -75,7 +100,6 @@ func executor(t string) {
 		cmd.Stderr = os.Stderr
 		cmd.Run()
 	}
-	return
 }
 
 func completer(d prompt.Document) []prompt.Suggest {
@@ -92,8 +116,6 @@ func completer(d prompt.Document) []prompt.Suggest {
 		}
 	}
 
-	//s := argumentsCompleter
-	//return prompt.FilterHasPrefix(s, d.GetWordBeforeCursor(), true)
 	return argumentsCompleter(args)
 }
 
@@ -104,23 +126,89 @@ func argumentsCompleter(args []string) []prompt.Suggest {
 
 	first := args[0]
 	switch first {
-	case "projects", "proj":
-		second := args[1]
+	case "ls", "list":
+		subcommands := getState()
+		//printState(state)
+		return prompt.FilterContains(subcommands, first, true)
+	case "cd":
+		subcommands := getState()
+		//increaseState(state)
+		return prompt.FilterContains(subcommands, first, true)
+	case "cd ../":
+		subcommands := getState()
+		//decreaseState(state)
+		return prompt.FilterContains(subcommands, first, true)
+	case "projects":
 		subcommands := projectsSuggestions
-		return prompt.FilterHasPrefix(subcommands, second, true)
-	case "tasklists":
-		third := args[2]
+		return prompt.FilterContains(subcommands, first, true)
+	case "tasklists", "lists":
 		subcommands := taskListsSuggestions
-		return prompt.FilterHasPrefix(subcommands, third, true)
-	case "tasks":
-		fourth := args[3]
+		return prompt.FilterHasPrefix(subcommands, first, true)
+	case "tasks", "tsks":
 		subcommands := taskSuggestions
-		return prompt.FilterHasPrefix(subcommands, fourth, true)
+		return prompt.FilterHasPrefix(subcommands, first, true)
 	default:
 		return []prompt.Suggest{}
 	}
 
 	return []prompt.Suggest{}
+}
+
+func increaseState(state int) prompt.Suggest {
+	if state != 3 {
+		state = state + 1
+	}
+	fmt.Println("increasing state to " + strconv.Itoa(state))
+	return prompt.Suggest{}
+}
+
+func decreaseState(state int) prompt.Suggest {
+	if state != 0 {
+		state = state -1
+	}
+	fmt.Println("decreasing state to " + strconv.Itoa(state))
+	return prompt.Suggest{}
+}
+
+func getState() []prompt.Suggest {
+	s := []prompt.Suggest{}
+
+	switch state {
+	case 1:
+		s = []prompt.Suggest {
+			{Text: "projects"},
+		}
+	case 2:
+		s = []prompt.Suggest {
+			{Text: "tasklists"},
+		}
+	case 3:
+		s = []prompt.Suggest {
+			{Text: "Tasks"},
+		}
+	case 4:
+		s = []prompt.Suggest {
+			{Text: "Task"},
+		}
+	default:
+		s = []prompt.Suggest {
+			{Text: "Root"},
+		}
+	}
+
+	return s
+}
+
+func printState(state int) prompt.Suggest {
+	switch state {
+	case 1:
+		fmt.Println("%+v", projectsSuggestions)
+	default:
+		//TODO
+		fmt.Println("help")
+	}
+
+	return prompt.Suggest{}
 }
 
 func mapProjects() []prompt.Suggest {
