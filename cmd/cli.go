@@ -30,7 +30,7 @@ import (
 
 // completerCmd represents the completer command
 var completerCmd = &cobra.Command{
-	Use:   "localPrompt",
+	Use:   "cli",
 	Short: "A brief description of your command",
 	Long: `A longer description that spans multiple lines and likely contains examples
 and usage of using your command. For example:
