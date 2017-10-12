@@ -20,9 +20,7 @@
 
 package main
 
-import (
-	"teamworkgo/cmd"
-)
+import "teamworkgo/cmd"
 
 func main() {
 

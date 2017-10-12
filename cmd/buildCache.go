@@ -25,8 +25,8 @@ import (
 	"github.com/spf13/cobra"
 	_ "github.com/mattn/go-sqlite3"
 
-    "teamworkgo/lib"
-    "teamworkgo/db"
+	"teamworkgo/db"
+	"teamworkgo/lib"
 )
 
 // buildCacheCmd represents the buildCache command

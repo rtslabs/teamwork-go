@@ -25,12 +25,11 @@ import (
 
 	"github.com/spf13/cobra"
 	"teamworkgo/cmd/localPrompt"
-	"github.com/c-bata/go-prompt"
 )
 
-// completerCmd represents the completer command
-var completerCmd = &cobra.Command{
-	Use:   "localPrompt",
+// lsCmd represents the ls command
+var lsCmd = &cobra.Command{
+	Use:   "ls",
 	Short: "A brief description of your command",
 	Long: `A longer description that spans multiple lines and likely contains examples
 and usage of using your command. For example:
@@ -38,32 +37,24 @@ and usage of using your command. For example:
 Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
-
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Printf("this-localPrompt\n")
-		fmt.Println("Please use `exit` or `Ctrl-D` to exit this program..")
-		t := prompt.New(
-				localPrompt.Executor,
-				localPrompt.Completer,
-				prompt.OptionTitle("tw localPrompt"),
-				prompt.OptionPrefix(">>> "),
-				prompt.OptionInputTextColor(prompt.Yellow),
-		)
-		t.Run()
+		t := localPrompt.PrintState()
+		for l := range t{
+			fmt.Printf("%+v\n", l)
+		}
 	},
 }
 
 func init() {
-	RootCmd.AddCommand(completerCmd)
+	RootCmd.AddCommand(lsCmd)
 	localPrompt.Initialize()
-
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	// completerCmd.PersistentFlags().String("foo", "", "A help for foo")
+	 lsCmd.PersistentFlags().String("state", "", "Override program state")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// completerCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	// lsCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
