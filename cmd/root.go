@@ -15,7 +15,7 @@ var cfgFile string
 var RootCmd = &cobra.Command{
 	Use:   "teamworkgo",
 	Short: "Go CLI to interact with the teamwork API",
-	Long: ``,
+	Long:  ``,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	//	Run: func(cmd *cobra.Command, args []string) { },
@@ -30,9 +30,9 @@ func Execute() {
 	}
 }
 
-
 func init() {
 	cobra.OnInitialize(initConfig)
+	cobra.OnInitialize(InitializeTeamworkData)
 
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,

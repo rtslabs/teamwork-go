@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
-	"teamworkgo/cmd/localPrompt"
 	"github.com/c-bata/go-prompt"
 )
 
@@ -23,8 +22,8 @@ to quickly create a Cobra application.`,
 		fmt.Printf("this-localPrompt\n")
 		fmt.Println("Please use `exit` or `Ctrl-D` to exit this program..")
 		t := prompt.New(
-				localPrompt.Executor,
-				localPrompt.Completer,
+				Executor,
+				Completer,
 				prompt.OptionTitle("tw localPrompt"),
 				prompt.OptionPrefix(">>> "),
 				prompt.OptionInputTextColor(prompt.Yellow),
@@ -35,5 +34,4 @@ to quickly create a Cobra application.`,
 
 func init() {
 	RootCmd.AddCommand(completerCmd)
-	localPrompt.Initialize()
 }
