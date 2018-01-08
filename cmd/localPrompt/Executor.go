@@ -17,7 +17,7 @@ func Executor(s string) {
 		return
 	}
 
-	cmd := exec.Command("go", "run", "/home/gabeduke/.go/src/teamworkgo/main.go "+s)
+	cmd := exec.Command("go", "run", "/home/gabeduke/.go/src/teamwork-go/main.go "+s)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr

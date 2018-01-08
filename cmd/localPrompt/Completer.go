@@ -72,33 +72,5 @@ func argumentsCompleter(args []string) []prompt.Suggest {
 		return []prompt.Suggest{}
 	}
 
-	//switch first {
-	//case "ls", "list":
-	//	second := args[1]
-	//	if len(args) == 2 {
-	//	case "projects":
-	//		subcommands := projectsSuggestions
-	//		return localPrompt.FilterContains(subcommands, first, true)
-	//		case "tasklists", "lists":
-	//		subcommands := taskListsSuggestions
-	//		return localPrompt.FilterHasPrefix(subcommands, first, true)
-	//		case "tasks", "tsks":
-	//		subcommands := taskSuggestions
-	//		return localPrompt.FilterHasPrefix(subcommands, first, true)
-	//	}
-	//	subcommands := getState()
-	//	//printState(State)
-	//	return localPrompt.FilterContains(subcommands, first, true)
-	//case "cd":
-	//	subcommands := getState()
-	//	//increaseState(State)
-	//	return localPrompt.FilterContains(subcommands, first, true)
-	//case "cd ../":
-	//	subcommands := getState()
-	//	//decreaseState(State)
-	//	return localPrompt.FilterContains(subcommands, first, true)
-	//
-	//}
-
 	return []prompt.Suggest{}
 }
