@@ -5,6 +5,7 @@ import (
 	"os"
 	"strings"
 	"fmt"
+	"log"
 )
 
 func Executor(s string) {
@@ -15,13 +16,20 @@ func Executor(s string) {
 		fmt.Println("Bye!")
 		os.Exit(0)
 		return
-	} else if s == "bash" {
-		cmd := exec.Command("bash")
+	} else if s == "log" {
+		cmd := exec.Command("/bin/sh", "-c", "teamwork-go "+s)
 		cmd.Stdin = os.Stdin
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		cmd.Run()
 	}
+
+	cmd := exec.Command("/bin/sh", "-c", "teamwork-go "+s)
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		log.Fatalf("cmd.Run() failed with %s\n", err)
+	}
+	fmt.Printf("combined out:\n%s\n", string(out))
 
 	return
 }

@@ -22,6 +22,7 @@ var logCmd = &cobra.Command{
 				fmt.Printf("%+v\n", l)
 			}
 		}
+		fmt.Printf(args[0])
 	},
 }
 
