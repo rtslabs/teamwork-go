@@ -1,5 +1,6 @@
 /teamworkgo.iml
-/twgo.db
-/.idea
-release
-bin
+/bin
+/.go
+/.push-*
+/.container-*
+/.dockerfile-*
