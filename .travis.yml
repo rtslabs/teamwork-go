@@ -2,14 +2,14 @@ language: go
 go:
 - 1.9
 - master
-# after_success:
-# - curl -sL https://git.io/goreleaser | bash
-deploy:
-  provider: releases
-  api_key:
-    secure: dNObcoCGEN4UMq/uKCAgRz4V1hOG6RSHEcUrLpqOAchSaLvH5e1sU5iCf16rKzMM6ctBPSTb1pVI0q8TUAPkWuQhH8RfpAH4BjTzpwqc8/IuSPJQv3Lca5QA1Jcod8kA3aiw86ymr3CjB48+5c/7b/lOuE8CpBBwXrN8fTe7CdmYKWVnjqDl0VxKXf8pqoPo9UhejthjA+IQQ9+v09yetQIOXUoC43rt5mY+hcqn6oHqY6yIXM4PTNXmWlTogpoAf6ZuvJrvExSyhh6E7FWPT3m/AqG05Zxgj5hLISAtrvgEvW8awN6KGcs+9eU5Nt1jj20JDbkrbkaY99qeVFcLtLE0lcOpRdS5fBLGvPB3NdPcKX9AatGuqInQbTjfLIz6P0fW2SGa23kBFoWdku1LyLy2ymweCwA2XJy5NzfRt0v+QwCzreuT+k7JGmjHMQuUQmAP6QHw0X910RkCHGDq/ml9f8HAnuTl8DWFZAiNu4vjeE5PfAvP2bW60YTxIOd+M/ljXDpSihI8akDBSrPXnuOL9TweWps1d0StCvcc5Hcd06iwuzggHA3aRmYPJhc3fnUSyLDOg+1+YMywfFU7RSFn9JwovhTpgAYUbWMVYk6mAFnO7/Ly7KlAsHozZRJv1rboqw8eG5oSBhx7uL3fubOReSyHA0YzJ9o5ggfFwSo=
-  file: bin/teamwork-go-linux-amd64
-  on:
-    repo: gabeduke/teamwork-go
-    branch: refactor
-    tags: true
+after_success:
+- curl -sL https://git.io/goreleaser | bash
+# deploy:
+#   provider: releases
+#   api_key:
+#     secure: dNObcoCGEN4UMq/uKCAgRz4V1hOG6RSHEcUrLpqOAchSaLvH5e1sU5iCf16rKzMM6ctBPSTb1pVI0q8TUAPkWuQhH8RfpAH4BjTzpwqc8/IuSPJQv3Lca5QA1Jcod8kA3aiw86ymr3CjB48+5c/7b/lOuE8CpBBwXrN8fTe7CdmYKWVnjqDl0VxKXf8pqoPo9UhejthjA+IQQ9+v09yetQIOXUoC43rt5mY+hcqn6oHqY6yIXM4PTNXmWlTogpoAf6ZuvJrvExSyhh6E7FWPT3m/AqG05Zxgj5hLISAtrvgEvW8awN6KGcs+9eU5Nt1jj20JDbkrbkaY99qeVFcLtLE0lcOpRdS5fBLGvPB3NdPcKX9AatGuqInQbTjfLIz6P0fW2SGa23kBFoWdku1LyLy2ymweCwA2XJy5NzfRt0v+QwCzreuT+k7JGmjHMQuUQmAP6QHw0X910RkCHGDq/ml9f8HAnuTl8DWFZAiNu4vjeE5PfAvP2bW60YTxIOd+M/ljXDpSihI8akDBSrPXnuOL9TweWps1d0StCvcc5Hcd06iwuzggHA3aRmYPJhc3fnUSyLDOg+1+YMywfFU7RSFn9JwovhTpgAYUbWMVYk6mAFnO7/Ly7KlAsHozZRJv1rboqw8eG5oSBhx7uL3fubOReSyHA0YzJ9o5ggfFwSo=
+#   file: bin/teamwork-go-linux-amd64
+#   on:
+#     repo: gabeduke/teamwork-go
+#     branch: refactor
+#     tags: true
