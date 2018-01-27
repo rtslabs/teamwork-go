@@ -1,0 +1,12 @@
+# .goreleaser.yml
+# Build customization
+builds:
+  - main: app.go
+binary: teamwork-go
+goos:
+  - linux
+goarch:
+  - amd64
+# Archive customization
+archive:
+  format: tar.gz

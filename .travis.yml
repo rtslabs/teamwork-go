@@ -3,11 +3,12 @@ language: go
 go:
   - 1.9
   - master
-
-deploy:
-  provider: pages
-  skip-cleanup: true
-  github-token: $GITHUB_TOKEN  # Set in travis-ci.org dashboard, marked secure
-  keep-history: true
-  on:
-    branch: refactor
+after_success:
+  - curl -sL https://git.io/goreleaser | bash
+# deploy:
+#   provider: pages
+#   skip-cleanup: true
+#   github-token: $GITHUB_TOKEN  # Set in travis-ci.org dashboard, marked secure
+#   keep-history: true
+#   on:
+#     branch: gh-pages
