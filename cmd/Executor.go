@@ -1,12 +1,13 @@
 package cmd
 
 import (
-	"os/exec"
-	"os"
-	"strings"
 	"fmt"
+	"os"
+	"os/exec"
+	"strings"
 )
 
+// Executor ...
 func Executor(s string) {
 	s = strings.TrimSpace(s)
 	if s == "" {

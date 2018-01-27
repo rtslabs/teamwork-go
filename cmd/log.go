@@ -7,6 +7,7 @@ import (
 )
 
 var (
+	// Suggestions ...
 	Suggestions bool
 )
 
@@ -16,9 +17,9 @@ var logCmd = &cobra.Command{
 	Long: `list tasks assigned to a current user
 		filter with args`,
 	Run: func(cmd *cobra.Command, args []string) {
-		if Suggestions  {
+		if Suggestions {
 			t := GetTasks()
-			for l := range t{
+			for l := range t {
 				fmt.Printf("%+v\n", l)
 			}
 		}

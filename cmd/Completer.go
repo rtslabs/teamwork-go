@@ -18,6 +18,7 @@ var commands = []prompt.Suggest{
 	{Text: "exit", Description: "Exit the localPrompt"},
 }
 
+// Completer ...
 func Completer(d prompt.Document) []prompt.Suggest {
 	if d.TextBeforeCursor() == "" {
 		return []prompt.Suggest{}

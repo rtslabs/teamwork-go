@@ -3,8 +3,8 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/spf13/cobra"
 	"github.com/c-bata/go-prompt"
+	"github.com/spf13/cobra"
 )
 
 // completerCmd represents the completer command
@@ -22,11 +22,11 @@ to quickly create a Cobra application.`,
 		fmt.Printf("this-localPrompt\n")
 		fmt.Println("Please use `exit` or `Ctrl-D` to exit this program..")
 		t := prompt.New(
-				Executor,
-				Completer,
-				prompt.OptionTitle("tw localPrompt"),
-				prompt.OptionPrefix(">>> "),
-				prompt.OptionInputTextColor(prompt.Yellow),
+			Executor,
+			Completer,
+			prompt.OptionTitle("tw localPrompt"),
+			prompt.OptionPrefix(">>> "),
+			prompt.OptionInputTextColor(prompt.Yellow),
 		)
 		t.Run()
 	},

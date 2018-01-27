@@ -10,9 +10,9 @@ import (
 )
 
 var (
-	conn        *teamwork.Connection
-	filter      string
-	projects    bool
+	conn                    *teamwork.Connection
+	filter                  string
+	projects                bool
 	assignedTaskSuggestions []prompt.Suggest
 )
 
@@ -53,10 +53,12 @@ func setAssignedTasks() []prompt.Suggest {
 	return assignedTaskSuggestions
 }
 
+// GetTasks ...
 func GetTasks() []prompt.Suggest {
 	return taskSuggestions
 }
 
+// InitializeTeamworkData ...
 func InitializeTeamworkData() {
 	taskSuggestions = setAssignedTasks()
 }
