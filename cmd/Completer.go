@@ -8,7 +8,7 @@ import (
 
 var taskSuggestions = []prompt.Suggest{}
 var commands = []prompt.Suggest{
-	{Text: "log", Description: "List tasks"},
+	{Text: "tasks", Description: "List assigned tasks"},
 
 	// aliases
 	// {Text: "list"},
@@ -43,7 +43,7 @@ func argumentsCompleter(args []string) []prompt.Suggest {
 
 	first := args[0]
 	switch first {
-	case "log":
+	case "tasks":
 		second := args[1]
 		if len(args) == 2 {
 			subCommands := taskSuggestions
