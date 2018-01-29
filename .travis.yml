@@ -2,6 +2,4 @@ language: go
 go:
 - 1.9
 - master
-after_success: |
-  go get github.com/goreleaser/goreleaser \
-  && goreleaser
+after_success: go get github.com/goreleaser/goreleaser && goreleaser
