@@ -27,9 +27,7 @@ If the binary is on your path simply run `teamwork-go` from a terminal
 * Clone repository and get project dependencies. `go get` will clone the repository to `$GOPATH/src/github.com/[username]`. This is important for linking local dependencies.
 
     ```bash
-    go get git@github.com:gabeduke/teamwork-go.git
-    cd $GOPATH/src/github.com/gabeduke/teamwork-go
-    go get ./... # install local dependencies
+    go get -v github.com/gabeduke/teamwork-go/...
     ```
 
 * Commands for local development (from project root):
