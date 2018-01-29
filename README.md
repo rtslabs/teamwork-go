@@ -17,7 +17,7 @@ teamwork-go is a cli to interact with [Teamwork](https://www.teamwork.com/) time
     EOF
     ```
 
-## Run 
+## Run
 
 If the binary is on your path simply run `teamwork-go` from a terminal
 
@@ -35,6 +35,7 @@ If the binary is on your path simply run `teamwork-go` from a terminal
 * Commands for local development (from project root):
     * Run: `go run main.go [command]`
     * To build a standalone binary: `go build`
+    * To install dev version: `go install`
 
 * Architecture
 

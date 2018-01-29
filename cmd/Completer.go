@@ -4,11 +4,13 @@ import (
 	"strings"
 
 	"github.com/c-bata/go-prompt"
+	"github.com/swill/teamwork"
 )
 
 var taskSuggestions = []prompt.Suggest{}
+var tasks = teamwork.Tasks{}
 var commands = []prompt.Suggest{
-	{Text: "tasks", Description: "List assigned tasks"},
+	{Text: "log", Description: "List assigned tasks"},
 
 	// aliases
 	// {Text: "list"},
@@ -43,7 +45,7 @@ func argumentsCompleter(args []string) []prompt.Suggest {
 
 	first := args[0]
 	switch first {
-	case "tasks":
+	case "log":
 		second := args[1]
 		if len(args) == 2 {
 			subCommands := taskSuggestions

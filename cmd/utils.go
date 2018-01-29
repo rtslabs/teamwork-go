@@ -13,20 +13,10 @@ var (
 	conn                    *teamwork.Connection
 	filter                  string
 	projects                bool
-	assignedTaskSuggestions []prompt.Suggest
+	suggestMap				[]prompt.Suggest
 )
 
-type task struct {
-	taskListName string
-	ProjectName  string
-	id           int
-}
-
-type tasklist struct {
-	tasks []task
-}
-
-func setAssignedTasks() []prompt.Suggest {
+func setAssignedTasks() {
 	conn = tw()
 	userID := viper.GetString("global.userId")
 
@@ -42,15 +32,15 @@ func setAssignedTasks() []prompt.Suggest {
 
 	for index := range t {
 
-		task := prompt.Suggest{
+		taskSuggestion := prompt.Suggest{
 			Description: t[index].ProjectName,
 			Text:        t[index].TaskListName,
 		}
 
-		assignedTaskSuggestions = append(assignedTaskSuggestions, task)
+		tasks		= t
+		suggestMap	= append(suggestMap, taskSuggestion)
 	}
-
-	return assignedTaskSuggestions
+	taskSuggestions = suggestMap
 }
 
 // GetTasks ...
@@ -60,7 +50,7 @@ func GetTasks() []prompt.Suggest {
 
 // InitializeTeamworkData ...
 func InitializeTeamworkData() {
-	taskSuggestions = setAssignedTasks()
+	setAssignedTasks()
 }
 
 func tw() *teamwork.Connection {
