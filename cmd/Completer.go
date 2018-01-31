@@ -10,10 +10,11 @@ import (
 var taskSuggestions = []prompt.Suggest{}
 var tasks = teamwork.Tasks{}
 var commands = []prompt.Suggest{
-	{Text: "log", Description: "List assigned tasks"},
+	{Text: "log", Description: "log time entries (currently non-functional)"},
+	{Text: "list", Description: "List assigned tasks"},
 
 	// aliases
-	// {Text: "list"},
+	// {Text: "ls"},
 
 	// customized
 	{Text: "bash", Description: "Drop to a bash subshell"},

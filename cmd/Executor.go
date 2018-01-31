@@ -24,5 +24,13 @@ func Executor(s string) {
 		cmd.Run()
 	}
 
+	cmd := exec.Command("/bin/sh", "-c", "teamwork-go "+s)
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	if err := cmd.Run(); err != nil {
+		fmt.Printf("Got error: %s\n", err.Error())
+	}
+
 	return
 }

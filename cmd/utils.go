@@ -3,6 +3,7 @@ package cmd
 import (
 	"log"
 	"os"
+	"strconv"
 
 	"github.com/c-bata/go-prompt"
 	"github.com/spf13/viper"
@@ -32,9 +33,10 @@ func setAssignedTasks() {
 
 	for index := range t {
 
+		s := strconv.Itoa(t[index].TaskListID)
 		taskSuggestion := prompt.Suggest{
-			Description: t[index].ProjectName,
-			Text:        t[index].TaskListName,
+			Text:        t[index].TaskListName + ": " + t[index].ProjectName,
+			Description: s,
 		}
 
 		tasks		= t
