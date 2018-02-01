@@ -11,14 +11,14 @@ import (
 )
 
 var (
-	conn                    *teamwork.Connection
-	filter                  string
-	projects                bool
-	suggestMap				[]prompt.Suggest
+	conn       *teamwork.Connection
+	filter     string
+	projects   bool
+	suggestMap []prompt.Suggest
 )
 
 func setAssignedTasks() {
-	conn = tw()
+	conn = TeamworkConnection()
 	userID := viper.GetString("global.userId")
 
 	// get all tasks
@@ -35,12 +35,12 @@ func setAssignedTasks() {
 
 		s := strconv.Itoa(t[index].TaskListID)
 		taskSuggestion := prompt.Suggest{
-			Text:        t[index].TaskListName + ": " + t[index].ProjectName,
+			Text:        t[index].ProjectName + ": " + t[index].Content,
 			Description: s,
 		}
 
-		tasks		= t
-		suggestMap	= append(suggestMap, taskSuggestion)
+		tasks = t
+		suggestMap = append(suggestMap, taskSuggestion)
 	}
 	taskSuggestions = suggestMap
 }
@@ -55,7 +55,8 @@ func InitializeTeamworkData() {
 	setAssignedTasks()
 }
 
-func tw() *teamwork.Connection {
+// TeamworkConnection ...
+func TeamworkConnection() *teamwork.Connection {
 	apiToken := viper.GetString("global.apiKey")
 
 	// setup the teamwork connection
