@@ -85,3 +85,18 @@ global flags
     --json
 
 The pattern to follow is APPNAME VERB NOUN --ADJECTIVE. or APPNAME COMMAND ARG --FLAG
+
+
+src
+    main.go
+    cmd
+        config
+            ... .go
+        timer
+        ...
+    configuration
+        favorites
+    teamwork
+    googlecal
+    status
+    interactive
