@@ -6,3 +6,4 @@
 /.dockerfile-*
 teamwork-go
 dist
+.idea
