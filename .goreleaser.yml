@@ -18,5 +18,5 @@ archive:
 
 release:
   github:
-    owner: gabeduke
+    owner: rtslabs
     name: teamwork-go

@@ -4,7 +4,7 @@ teamwork-go is a cli to interact with [Teamwork](https://www.teamwork.com/) time
 
 ## Install
 
-* Download the latest release from the [releases page](https://github.com/gabeduke/teamwork-go/releases) and unzip.
+* Download the latest release from the [releases page](https://github.com/rtslabs/teamwork-go/releases) and unzip.
 * Copy the `teamwork-go` binary to a location in your path `sudo cp teamwork-go /usr/local/bin/`
 * Create a config file (this can be skipped if you prefer to use command line flags):
 
@@ -27,7 +27,7 @@ been
 * Clone repository and get project dependencies. `go get` will clone the repository to `$GOPATH/src/github.com/[username]`. This is important for linking local dependencies.
 
     ```bash
-    go get -v github.com/gabeduke/teamwork-go/...
+    go get -v github.com/rtslabs/teamwork-go/...
     ```
 
 * Commands for local development (from project root):

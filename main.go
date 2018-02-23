@@ -1,6 +1,6 @@
 package main
 
-import "github.com/gabeduke/teamwork-go/cmd"
+import "github.com/rtslabs/teamwork-go/cmd"
 
 func main() {
 	cmd.Execute()
