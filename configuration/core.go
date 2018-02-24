@@ -7,12 +7,6 @@ import (
 	"net/http"
 )
 
-// Suggest ...
-type Suggest struct {
-	Text        string
-	Description string
-}
-
 var apiURL string
 var apiKey string
 
