@@ -1,10 +1,11 @@
-package cmd
+package teamwork
 
 import (
 	"log"
 	"os"
 	"strconv"
 
+	"github.com/rtslabs/teamwork-go/interactive"
 	"github.com/c-bata/go-prompt"
 	"github.com/spf13/viper"
 	"github.com/swill/teamwork"

@@ -1,4 +1,4 @@
-package lib
+package configuration
 
 import (
 	"encoding/base64"
