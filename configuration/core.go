@@ -1,4 +1,4 @@
-package lib
+package configuration
 
 import (
 	"encoding/base64"
@@ -6,12 +6,6 @@ import (
 	"log"
 	"net/http"
 )
-
-// Suggest ...
-type Suggest struct {
-	Text        string
-	Description string
-}
 
 var apiURL string
 var apiKey string
