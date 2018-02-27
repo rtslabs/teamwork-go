@@ -1,39 +1,65 @@
 package configuration
 
 import (
-	"encoding/base64"
 	"github.com/spf13/viper"
-	"log"
-	"net/http"
+	"github.com/mitchellh/go-homedir"
+	"fmt"
+	"os"
+	"path/filepath"
+	"github.com/rtslabs/teamwork-go/util"
 )
 
-var apiURL string
-var apiKey string
+const FILENAME = ".teamworkgo"
 
-func initConfig() {
-	siteName := viper.GetString("global.companyName")
-	apiURL = "https://" + siteName + ".teamwork.com/"
-	apiKey = viper.GetString("global.apiKey")
-}
+func InitConfig(override string) {
 
-// GetRequest ...
-func GetRequest(endPoint string) *http.Response {
+	fmt.Println("in init config")
+	configDirs := getConfigDirs()
 
-	initConfig()
-
-	client := &http.Client{}
-	req, err := http.NewRequest("GET", apiURL+endPoint, nil)
-	req.Header.Add("Authorization", "Basic "+basicAuth(apiKey))
-
-	resp, err := client.Do(req)
-	if err != nil {
-		log.Fatal(err)
+	// read configs
+	viper.SetConfigName(FILENAME)
+	for e := range configDirs {
+		viper.AddConfigPath(configDirs[e])
+		viper.MergeInConfig()
 	}
 
-	return resp
+	// Use config file from the flag.
+	if override != "" {
+		viper.SetConfigFile(override)
+		viper.MergeInConfig()
+	}
+
+	// read in environment variables that match
+	viper.AutomaticEnv()
+
+	//siteName := viper.GetString("global.companyName")
+	//apiURL := "https://" + siteName + ".teamwork.com/"
+	//apiKey := viper.GetString("global.apiKey")
 
 }
 
-func basicAuth(apiKey string) string {
-	return base64.StdEncoding.EncodeToString([]byte(apiKey))
+func getConfigDirs() []string {
+
+	var dirs []string
+	if path, err := os.Getwd(); err == nil {
+		for path != "/" {
+			dirs = append(dirs, path)
+			path = filepath.Dir(path)
+		}
+		dirs = append(dirs, "/")
+	} else {
+		fmt.Println("Unable to find working directory for configs")
+	}
+
+	if home, err := homedir.Dir(); err == nil {
+		if !util.Contains(dirs, home) {
+			dirs = append(dirs, home)
+		}
+	} else {
+		fmt.Println("Unable to find home directory for configs")
+	}
+
+	util.Reverse(dirs)
+
+	return dirs
 }
