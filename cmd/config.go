@@ -1,6 +1,5 @@
 // Copyright © 2018 rtslabs
 
-
 package cmd
 
 import (
@@ -10,17 +9,17 @@ import (
 )
 
 var (
-	initConf		bool
+	initConf bool
 
-	setName 		string
-	setTaskID 		int
-	setTaskListID 	int
-	setProjectID 	int
-	setDate 		string
-	setMessage 		string
-	setHours 		int
-	setMinutes 		int
-	setBillable 	bool
+	setName       string
+	setTaskID     int
+	setTaskListID int
+	setProjectID  int
+	setDate       string
+	setMessage    string
+	setHours      int
+	setMinutes    int
+	setBillable   bool
 )
 
 // configCmd represents the config command
@@ -87,7 +86,6 @@ var setCmd = &cobra.Command{
 	},
 }
 
-
 func init() {
 	configCmd.AddCommand(getCmd)
 	configCmd.AddCommand(setCmd)
@@ -99,7 +97,7 @@ func init() {
 	configCmd.PersistentFlags().BoolVarP(&initConf, "init", "i", false, "Initialize a config in the cwd (defaults to false)")
 
 	setCmd.PersistentFlags().StringVarP(&setName, "name", "n", "", "Set an alias [favorite] name to the current working config")
-	setCmd.PersistentFlags().IntVarP(&setTaskID, "taskId", "t", 0,"Set a Task ID for the current working config")
+	setCmd.PersistentFlags().IntVarP(&setTaskID, "taskId", "t", 0, "Set a Task ID for the current working config")
 	setCmd.PersistentFlags().IntVarP(&setTaskListID, "taskListId", "l", 0, "Set a Task List ID for the current working config")
 	setCmd.PersistentFlags().IntVarP(&setProjectID, "projectId", "p", 0, "Set a Project ID for the current working config")
 	setCmd.PersistentFlags().StringVarP(&setDate, "date", "d", "", "Set a date to the current working config (mm/dd/yy)")
