@@ -65,23 +65,6 @@ var setCmd = &cobra.Command{
 	Use:   "set",
 	Short: "Set config parameters to the current working project config",
 	Run: func(cmd *cobra.Command, args []string) {
-		flagKeys := []string{
-			"setName",
-			"setTaskID",
-			"setTaskListID",
-			"setProjectID",
-			"setDate",
-			"setMessage",
-			"setHours",
-			"setMinutes",
-			"setBillable",
-		}
-
-		for _, key := range flagKeys {
-			//TODO set items to config file
-			fmt.Println("Key: {0}", key)
-		}
-
 		fmt.Println("set called")
 	},
 }
