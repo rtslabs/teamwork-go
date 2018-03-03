@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/rtslabs/teamwork-go/configuration"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/rtslabs/teamwork-go/configuration"
 )
 
 var cfgFile string
@@ -32,7 +32,7 @@ func Execute() {
 }
 
 func init() {
-	cobra.OnInitialize(func() { configuration.InitConfig(cfgFile) }, ) // doesn't work?
+	cobra.OnInitialize(func() { configuration.InitConfig(cfgFile) }) // doesn't work?
 	configuration.InitConfig("")
 
 	// Here you will define your flags and configuration settings.
