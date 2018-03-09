@@ -11,7 +11,7 @@ import (
 	"github.com/rtslabs/teamwork-go/util"
 )
 
-var fileRegex = regexp.MustCompile(".*\\.teamworkgo\\.(yml|json)$")
+var fileRegex = regexp.MustCompile(".*\\.teamworkgo\\.(yaml|yml|json)$")
 var fileTypeRegex = regexp.MustCompile(`[^.]+$`)
 
 func InitConfig(override string) {
