@@ -6,7 +6,6 @@ import (
 
 	"github.com/rtslabs/teamwork-go/configuration"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 var cfgFile string
@@ -34,23 +33,6 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(func() { configuration.InitConfig(cfgFile) }) // doesn't work?
 	configuration.InitConfig("")
-
-	// Here you will define your flags and configuration settings.
-	// Cobra supports persistent flags, which, if defined here,
-	// will be global for your application.
-	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/"+configuration.FILENAME+".yaml/json)")
-	RootCmd.PersistentFlags().StringP("companyName", "", "", "Name of Company")
-	RootCmd.PersistentFlags().StringP("apiKey", "", "", "API Key to access Teamwork")
-	RootCmd.PersistentFlags().StringP("userId", "", "User ID", "ID of the user in Teamwork")
-
-	viper.BindPFlag("global.companyName", RootCmd.PersistentFlags().Lookup("companyName"))
-	viper.BindPFlag("global.apiKey", RootCmd.PersistentFlags().Lookup("apiKey"))
-	viper.BindPFlag("global.userId", RootCmd.PersistentFlags().Lookup("userId"))
-
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
-	// RootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-
 }
 
 // initConfig reads in config file and ENV variables if set.

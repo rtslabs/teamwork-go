@@ -4,11 +4,12 @@ import (
 	"regexp"
 	"fmt"
 	"os"
-	"github.com/spf13/viper"
 	"strings"
 	"path/filepath"
 	"github.com/mitchellh/go-homedir"
 	"github.com/rtslabs/teamwork-go/util"
+	"encoding/json"
+	"io/ioutil"
 )
 
 var fileRegex = regexp.MustCompile(".*\\.teamworkgo\\.(yaml|yml|json)$")
@@ -32,32 +33,25 @@ func InitConfig(override string) {
 
 func readConfig(file string) (config Configuration, err error) {
 
-	if fileReader, e := os.Open(file); e == nil {
+	if fileData, e := ioutil.ReadFile(file); e == nil {
 
-		viper.SetConfigName(FILENAME)
-
+		fileType := "json"
 		for _, match := range fileTypeRegex.FindAllString(file, -1) {
-			viper.SetConfigType(match)
+			fileType = strings.ToLower(match)
 		}
 
-		viper.ReadConfig(fileReader)
-
-		if unmarshalErr := viper.Unmarshal(&config); unmarshalErr != nil {
-			fmt.Println("Error reading config file", file, err)
-			err = unmarshalErr
+		if fileType == "json" {
+			json.Unmarshal(fileData, &config)
 		}
 
-		fileReader.Close()
 	} else {
 		err = e
 		fmt.Println("Error opening config file", file, err)
 	}
 	config.Location = file
-	return config, err
+	return config, nil
 }
 
-/*Parse populates the viper instance walking through the passed paths, loading any
-files found in the directory.  It silently ignores any errors (bad files, etc)*/
 func readFileConfigs(files []string) (configs []Configuration) {
 
 	for _, file := range files {
