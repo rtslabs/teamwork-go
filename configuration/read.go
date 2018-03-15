@@ -10,6 +10,8 @@ import (
 	"github.com/rtslabs/teamwork-go/util"
 	"encoding/json"
 	"io/ioutil"
+	"gopkg.in/yaml.v2"
+	"errors"
 )
 
 var fileRegex = regexp.MustCompile(".*\\.teamworkgo\\.(yaml|yml|json)$")
@@ -33,21 +35,28 @@ func InitConfig(override string) {
 
 func readConfig(file string) (config Configuration, err error) {
 
-	if fileData, e := ioutil.ReadFile(file); e == nil {
+	if fileData, err := ioutil.ReadFile(file); err == nil {
 
 		fileType := "json"
 		for _, match := range fileTypeRegex.FindAllString(file, -1) {
 			fileType = strings.ToLower(match)
 		}
 
-		if fileType == "json" {
-			json.Unmarshal(fileData, &config)
+		switch fileType {
+		case "json":
+			err = json.Unmarshal(fileData, &config)
+		case "yml", "yaml":
+			err = yaml.Unmarshal(fileData, &config)
+		default:
+			err = errors.New("unrecognized file type: " + fileType)
 		}
 
-	} else {
-		err = e
-		fmt.Println("Error opening config file", file, err)
 	}
+
+	if err != nil {
+		fmt.Println("error opening config file", file, err)
+	}
+
 	config.Location = file
 	return config, nil
 }
