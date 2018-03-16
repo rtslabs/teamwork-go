@@ -12,7 +12,10 @@ import (
 	"io/ioutil"
 	"gopkg.in/yaml.v2"
 	"errors"
+	"log"
 )
+
+const FILENAME = ".teamworkgo"
 
 var fileRegex = regexp.MustCompile(".*\\.teamworkgo\\.(yaml|yml|json)$")
 var fileTypeRegex = regexp.MustCompile(`[^.]+$`)
@@ -33,24 +36,51 @@ func InitConfig(override string) {
 	}
 }
 
+func writeConfig(config Configuration) (err error) {
+
+	// change extension and delete the old one
+	if !strings.HasSuffix(config.Location, config.FileType) {
+		os.Remove(config.Location)
+		current := filepath.Ext(config.Location)
+		naked := strings.TrimSuffix(config.Location, current)
+		config.Location = naked + "." + config.FileType
+	}
+
+	var data []byte
+	switch config.FileType {
+	case "json":
+		data, err = json.MarshalIndent(config, "", "  ")
+	case "yml", "yaml":
+		data, err = yaml.Marshal(config)
+	default:
+		err = errors.New("unrecognized file type: " + config.FileType)
+	}
+
+	if err != nil {
+		log.Println("Error writing config", config.Location, err)
+		return err
+	}
+
+	return ioutil.WriteFile(config.Location, data, 0644)
+}
+
 func readConfig(file string) (config Configuration, err error) {
 
 	if fileData, err := ioutil.ReadFile(file); err == nil {
 
-		fileType := "json"
+		config.FileType = "json"
 		for _, match := range fileTypeRegex.FindAllString(file, -1) {
-			fileType = strings.ToLower(match)
+			config.FileType = strings.ToLower(match)
 		}
 
-		switch fileType {
+		switch config.FileType {
 		case "json":
 			err = json.Unmarshal(fileData, &config)
 		case "yml", "yaml":
 			err = yaml.Unmarshal(fileData, &config)
 		default:
-			err = errors.New("unrecognized file type: " + fileType)
+			err = errors.New("unrecognized file type: " + config.FileType)
 		}
-
 	}
 
 	if err != nil {

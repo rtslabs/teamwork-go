@@ -11,6 +11,7 @@ var Configs []Configuration
 
 type Configuration struct {
 	Location  string
+	FileType  string
 	Teamwork  TeamworkConfig
 	Favorites []FavoriteConfig
 	TodoItems []TodoConfig
@@ -40,8 +41,6 @@ type TodoConfig struct {
 	DueDate     string
 	Description string
 }
-
-const FILENAME = ".teamworkgo"
 
 // return todos from all configs
 func GetFullTodoList() (todos []TodoConfig) {
