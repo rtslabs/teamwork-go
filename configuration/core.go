@@ -3,6 +3,8 @@ package configuration
 import (
 	"errors"
 	"github.com/rtslabs/teamwork-go/util"
+	"log"
+	"os"
 )
 
 // config per directory - ordered from / to current
@@ -31,7 +33,6 @@ type FavoriteConfig struct {
 	Message    string
 	Time       string
 	Billable   string
-	Todo       TodoConfig
 }
 
 type TodoConfig struct {
@@ -40,6 +41,17 @@ type TodoConfig struct {
 	ProjectId   string
 	DueDate     string
 	Description string
+}
+
+func InitConfigDir(absPath, extension string) error {
+	fileName := absPath + "/" + FILENAME + "." + extension
+
+	if _, err := os.Stat(fileName); err != nil {
+		log.Fatal("file " + fileName + " already exists")
+	}
+
+	newConfig := Configuration{Location: fileName, FileType: extension}
+	return writeConfig(&newConfig)
 }
 
 // return todos from all configs

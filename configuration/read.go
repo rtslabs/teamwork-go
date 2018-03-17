@@ -12,7 +12,6 @@ import (
 	"io/ioutil"
 	"gopkg.in/yaml.v2"
 	"errors"
-	"log"
 )
 
 const FILENAME = ".teamworkgo"
@@ -36,7 +35,7 @@ func InitConfig(override string) {
 	}
 }
 
-func writeConfig(config Configuration) (err error) {
+func writeConfig(config *Configuration) (err error) {
 
 	// change extension and delete the old one
 	if !strings.HasSuffix(config.Location, config.FileType) {
@@ -56,12 +55,11 @@ func writeConfig(config Configuration) (err error) {
 		err = errors.New("unrecognized file type: " + config.FileType)
 	}
 
-	if err != nil {
-		log.Println("Error writing config", config.Location, err)
-		return err
+	if err == nil {
+		err = ioutil.WriteFile(config.Location, data, 0644)
 	}
 
-	return ioutil.WriteFile(config.Location, data, 0644)
+	return err
 }
 
 func readConfig(file string) (config Configuration, err error) {
