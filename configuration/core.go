@@ -3,18 +3,18 @@ package configuration
 import (
 	"errors"
 	"github.com/rtslabs/teamwork-go/util"
-	"reflect"
 )
 
-// config per directory
+// config per directory - ordered from / to current
 var Configs []Configuration
 
 type Configuration struct {
 	Location  string
 	FileType  string
 	Teamwork  TeamworkConfig
-	Favorites []FavoriteConfig
 	TodoItems []TodoConfig
+	Favorites []FavoriteConfig
+	Defaults  FavoriteConfig
 }
 
 type TeamworkConfig struct {
@@ -29,9 +29,9 @@ type FavoriteConfig struct {
 	TaskListId string
 	ProjectId  string
 	Message    string
-	Hours      int
-	Minutes    int
-	Billable   bool
+	Time       string
+	Billable   string
+	Todo       TodoConfig
 }
 
 type TodoConfig struct {
@@ -52,14 +52,25 @@ func GetFullTodoList() (todos []TodoConfig) {
 
 // return favorite config object found by name
 func GetFavorite(name string) (favorite FavoriteConfig, err error) {
+
+	found := false
+	for _, config := range Configs {
+		util.Overwrite(&config.Defaults, &favorite)
+	}
 	for _, config := range Configs {
 		for _, fav := range config.Favorites {
-			if fav.Name == name {
-				return fav, nil
+			if name == fav.Name {
+				util.Overwrite(&fav, &favorite)
+				found = true
 			}
 		}
 	}
-	return FavoriteConfig{Name: name}, errors.New("Unable to find favorite " + name)
+
+	if !found {
+		err = errors.New("favorite not found")
+	}
+
+	return favorite, err
 }
 
 // return favorite config object found by name
@@ -70,30 +81,4 @@ func GetTeamworkConfig() (config TeamworkConfig, err error) {
 		}
 	}
 	return TeamworkConfig{}, errors.New("unable to find valid teamwork config")
-}
-
-// TODO get working
-func overwrite(in interface{}, out interface{}) {
-
-	t := reflect.TypeOf(in)
-
-	inPtr := reflect.ValueOf(in)
-
-	out2 := reflect.New(reflect.TypeOf(out))
-	outPtr := reflect.ValueOf(out2)
-
-	for i := 0; i < t.NumField(); i++ {
-
-		// Ignore fields that don't have the same type as a string
-		if t.Field(i).Type != reflect.TypeOf("") {
-			continue
-		}
-
-		inField := inPtr.Field(i)
-		str := inField.Interface().(string)
-		if util.NotBlank(str) {
-			outField := outPtr.Field(i)
-			outField.SetString(str)
-		}
-	}
 }
