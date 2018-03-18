@@ -46,7 +46,7 @@ type TodoConfig struct {
 func InitConfigDir(absPath, extension string) error {
 	fileName := absPath + "/" + FILENAME + "." + extension
 
-	if _, err := os.Stat(fileName); err != nil {
+	if _, err := os.Stat(fileName); err == nil {
 		log.Fatal("file " + fileName + " already exists")
 	}
 
