@@ -35,6 +35,16 @@ var configCmd = &cobra.Command{
 	Long:  `Get or set various configurations`,
 }
 
+var configListCmd = &cobra.Command{
+	Use:   "list",
+	Short: "Lists the locations of the configs",
+	Run: func(cmd *cobra.Command, args []string) {
+		for _, conf := range configuration.Configs {
+			fmt.Println(conf.Location)
+		}
+	},
+}
+
 var initCmd = &cobra.Command{
 	Use:   "init",
 	Short: "Initializes a config in the current working directory",
@@ -131,6 +141,8 @@ var setTeamworkAPIKeyCmd = &cobra.Command{Use: "api-key", Short: "Set teamwork a
 }
 
 func init() {
+
+	configCmd.AddCommand(configListCmd)
 
 	configCmd.AddCommand(initCmd)
 	initCmd.Flags().StringVarP(&fileType, "fileType", "x", "yaml", "Initialize file with given file type extension")

@@ -16,7 +16,7 @@ import (
 
 const FILENAME = ".teamworkgo"
 
-var fileRegex = regexp.MustCompile(".*\\.teamworkgo\\.(yaml|yml|json)$")
+var fileRegex = regexp.MustCompile("^\\.teamworkgo\\.(yaml|yml|json)$")
 var fileTypeRegex = regexp.MustCompile(`[^.]+$`)
 
 func InitConfig(override string) {
@@ -110,7 +110,8 @@ func getConfigsFromDirs(dirs []string) (files []string) {
 				return err
 			}
 			if !i.IsDir() {
-				if fileRegex.MatchString(p) {
+				_, fileName := filepath.Split(p)
+				if fileRegex.MatchString(fileName) {
 					formatted := strings.Replace(p, "\\", "/", -1)
 					files = append(files, formatted)
 				}
