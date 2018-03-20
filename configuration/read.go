@@ -35,7 +35,7 @@ func InitConfig(override string) {
 	}
 }
 
-func writeConfig(config *Configuration) (err error) {
+func WriteConfig(config *Configuration) (err error) {
 
 	// change extension and delete the old one
 	if !strings.HasSuffix(config.Location, config.FileType) {
@@ -127,27 +127,29 @@ func getConfigsFromDirs(dirs []string) (files []string) {
 }
 
 // gets a list of config directories in the order they should be read
-func getConfigDirs() []string {
+// ordered from home to current
+func getConfigDirs() (dirs []string) {
 
-	var dirs []string
-	if path, err := os.Getwd(); err == nil {
-		for path != "/" {
-			dirs = append(dirs, path)
-			path = filepath.Dir(path)
-		}
-		dirs = append(dirs, "/")
-	} else {
-		fmt.Println("Unable to find working directory for configs")
-	}
-
-	if home, err := homedir.Dir(); err == nil {
-		if !util.Contains(dirs, home) {
-			dirs = append(dirs, home)
-		}
-	} else {
+	home, err := homedir.Dir()
+	if err != nil {
 		fmt.Println("Unable to find home directory for configs")
+		home = "."
 	}
 
+	path, err := os.Getwd()
+	if err != nil {
+		fmt.Println("Unable to find working directory for configs")
+		path = home
+	}
+
+	lastPath := "notarealpath"
+	for path != lastPath && path != home {
+		dirs = append(dirs, path)
+		lastPath = path
+		path = filepath.Dir(path)
+	}
+
+	dirs = append(dirs, home)
 	util.Reverse(dirs)
 
 	return dirs

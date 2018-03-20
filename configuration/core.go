@@ -7,7 +7,7 @@ import (
 	"os"
 )
 
-// config per directory - ordered from / to current
+// config per directory - ordered from home and / to current
 var Configs []Configuration
 
 type Configuration struct {
@@ -21,7 +21,7 @@ type Configuration struct {
 
 type TeamworkConfig struct {
 	SiteName string
-	ApiKey   string
+	APIKey   string
 	UserId   string
 }
 
@@ -43,6 +43,20 @@ type TodoConfig struct {
 	Description string
 }
 
+func MustGetLast() *Configuration {
+	if len(Configs) == 0 {
+		log.Fatal("No configurations found")
+	}
+	return &Configs[len(Configs) - 1]
+}
+
+func MustGetGlobal() *Configuration {
+	if len(Configs) == 0 {
+		log.Fatal("No configurations found")
+	}
+	return &Configs[0]
+}
+
 func InitConfigDir(absPath, extension string) error {
 	fileName := absPath + "/" + FILENAME + "." + extension
 
@@ -51,7 +65,7 @@ func InitConfigDir(absPath, extension string) error {
 	}
 
 	newConfig := Configuration{Location: fileName, FileType: extension}
-	return writeConfig(&newConfig)
+	return WriteConfig(&newConfig)
 }
 
 // return todos from all configs
@@ -86,11 +100,18 @@ func GetFavorite(name string) (favorite FavoriteConfig, err error) {
 }
 
 // return favorite config object found by name
-func GetTeamworkConfig() (config TeamworkConfig, err error) {
-	for _, conf := range Configs {
-		if util.NotBlank(conf.Teamwork.SiteName) && util.NotBlank(conf.Teamwork.ApiKey) {
-			return conf.Teamwork, nil
+func MustGetTeamworkConfig(global bool) (config* TeamworkConfig) {
+
+	if global {
+		return &MustGetLast().Teamwork
+	}
+
+	for i := range Configs {
+		conf := &Configs[len(Configs) - i - 1]
+		if util.NotBlank(conf.Teamwork.SiteName) && util.NotBlank(conf.Teamwork.APIKey) {
+			return &conf.Teamwork
 		}
 	}
-	return TeamworkConfig{}, errors.New("unable to find valid teamwork config")
+	log.Fatal("unable to find valid teamwork config")
+	return nil
 }

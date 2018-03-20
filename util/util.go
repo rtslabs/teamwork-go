@@ -4,15 +4,36 @@ import (
 	"regexp"
 	"reflect"
 	"log"
+	"encoding/json"
+	"gopkg.in/yaml.v2"
+	"errors"
+	"strings"
 )
 
 func Contains(s []string, e string) bool {
-	for _, a := range s {
+	return IndexOf(s, e) >= 0
+}
+
+func IndexOf(s []string, e string) int {
+	for i, a := range s {
 		if a == e {
-			return true
+			return i
 		}
 	}
-	return false
+	return -1
+}
+
+func IndexMatching(s []interface{}, f func(interface{}) bool) int {
+	for i, a := range s {
+		if f(a) {
+			return i
+		}
+	}
+	return -1
+}
+
+func AnyMatch(s []interface{}, f func(interface{}) bool) bool {
+	return IndexMatching(s, f) >= 0
 }
 
 func Reverse(list []string) {
@@ -52,4 +73,21 @@ func Overwrite(in interface{}, out interface{}) {
 		if inField.Type() == reflect.TypeOf("") {
 		}
 	}
+}
+
+func ToString(value interface{}, format string) (str string, err error) {
+
+	var data []byte
+	switch strings.ToLower(format) {
+	case "json":
+		data, err = json.MarshalIndent(value, "", "  ")
+	case "minified":
+		data, err = json.Marshal(value)
+	case "yml", "yaml":
+		data, err = yaml.Marshal(value)
+	default:
+		err = errors.New("unrecognized format type: " + format)
+	}
+
+	return string(data[:]), err
 }

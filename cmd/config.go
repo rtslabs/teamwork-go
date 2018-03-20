@@ -10,41 +10,29 @@ import (
 	"strings"
 	"path/filepath"
 	"log"
+	"github.com/rtslabs/teamwork-go/util"
 )
 
 var (
+	// config options
+	global bool
+
+	// set options
 	initConf bool
 
-	setName       string
-	setTaskID     string
-	setTaskListID string
-	setProjectID  string
-	setDate       string
-	setMessage    string
-	setHours      string
-	setMinutes    string
-	setBillable   string
+	// get options
+	format string
+
+	// init options
+	fileType string
 )
 
-var fileType string
-
-// configCmd represents the config command
+// configCmd represents the config sub-command
+// no command argument shows help
 var configCmd = &cobra.Command{
 	Use:   "config",
-	Short: "/shrug I dont know what the parent command does yet",
-	Long: `This could potentially list the current config or print some kind
-	of stats for the current project.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("config called")
-	},
-}
-
-var getCmd = &cobra.Command{
-	Use:   "get",
-	Short: "Returns the current project config",
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("get called")
-	},
+	Short: "Get or set various configurations",
+	Long:  `Get or set various configurations`,
 }
 
 var initCmd = &cobra.Command{
@@ -74,6 +62,39 @@ var initCmd = &cobra.Command{
 	},
 }
 
+var getCmd = &cobra.Command{
+	Use:   "get",
+	Short: "Returns the current project config",
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Println("get called")
+	},
+}
+
+var getTeamworkCmd = &cobra.Command{
+	Use:   "teamwork",
+	Short: "Get teamwork related config",
+	Run: func(cmd *cobra.Command, args []string) {
+
+		str, err := util.ToString(configuration.MustGetTeamworkConfig(global), format)
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Println(str)
+	},
+}
+
+var getTeamworkSiteCmd = &cobra.Command{Use: "site", Short: "Get teamwork site name",
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Println(configuration.MustGetTeamworkConfig(global).SiteName)
+	},
+}
+
+var getTeamworkAPIKeyCmd = &cobra.Command{Use: "api-key", Short: "Get teamwork api key",
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Println(configuration.MustGetTeamworkConfig(global).APIKey)
+	},
+}
+
 var setCmd = &cobra.Command{
 	Use:   "set",
 	Short: "Set config parameters to the current working project config",
@@ -82,24 +103,59 @@ var setCmd = &cobra.Command{
 	},
 }
 
+var teamworkSetCmd = &cobra.Command{
+	Use:   "teamwork",
+	Short: "Set teamwork related config",
+}
+
+var setTeamworkSiteCmd = &cobra.Command{Use: "site", Short: "Set teamwork site name",
+	Run: func(cmd *cobra.Command, args []string) {
+		if len(args) == 0 {
+			log.Fatal("Requires at least one argument")
+		}
+		conf := mustGetConfig()
+		conf.Teamwork.SiteName = args[0]
+		configuration.WriteConfig(conf)
+	},
+}
+
+var setTeamworkAPIKeyCmd = &cobra.Command{Use: "api-key", Short: "Set teamwork api key",
+	Run: func(cmd *cobra.Command, args []string) {
+		if len(args) == 0 {
+			log.Fatal("Requires at least one argument")
+		}
+		conf := mustGetConfig()
+		conf.Teamwork.APIKey = args[0]
+		configuration.WriteConfig(conf)
+	},
+}
+
 func init() {
-	configCmd.AddCommand(getCmd)
-	configCmd.AddCommand(setCmd)
-	//
-	//setCmd.PersistentFlags().StringVarP(&setName, "name", "n", "", "Set an alias [favorite] name to the current working config")
-	//setCmd.PersistentFlags().StringVarP(&setTaskID, "taskId", "t", 0, "Set a Task ID for the current working config")
-	//setCmd.PersistentFlags().StringVarP(&setTaskListID, "taskListId", "l", 0, "Set a Task List ID for the current working config")
-	//setCmd.PersistentFlags().StringVarP(&setProjectID, "projectId", "p", 0, "Set a Project ID for the current working config")
-	//setCmd.PersistentFlags().StringVarP(&setDate, "date", "d", "", "Set a date to the current working config (mm/dd/yy)")
-	//setCmd.PersistentFlags().StringVarP(&setMessage, "msg", "m", "", "Set a message to the current working config")
-	//setCmd.PersistentFlags().StringVarP(&setHours, "hours", 0, "Set default hours to the current working config")
-	//setCmd.PersistentFlags().StringVarP(&setBillable, "billable", "b", true, "Set current working config as billable (defaults to true)")
 
 	configCmd.AddCommand(initCmd)
 	initCmd.Flags().StringVarP(&fileType, "fileType", "x", "yaml", "Initialize file with given file type extension")
 
-	RootCmd.AddCommand(configCmd)
+	configCmd.AddCommand(getCmd)
+	getCmd.AddCommand(getTeamworkCmd)
+	getCmd.PersistentFlags().StringVarP(&format, "format", "f", "json", "Format of output [json, yaml, yml, minified")
+	getTeamworkCmd.AddCommand(getTeamworkSiteCmd)
+	getTeamworkCmd.AddCommand(getTeamworkAPIKeyCmd)
 
-	// Here you will define your flags and configuration settings.
+	configCmd.AddCommand(setCmd)
+	setCmd.AddCommand(teamworkSetCmd)
+	teamworkSetCmd.AddCommand(setTeamworkSiteCmd)
+	teamworkSetCmd.AddCommand(setTeamworkAPIKeyCmd)
+
 	setCmd.PersistentFlags().BoolVarP(&initConf, "init", "i", false, "Initialize a config in the cwd (defaults to false)")
+
+	RootCmd.AddCommand(configCmd)
+	configCmd.PersistentFlags().BoolVarP(&global, "global", "g", false, "Set or get from the global config in your home directory")
+}
+
+func mustGetConfig() (*configuration.Configuration) {
+	if global {
+		return configuration.MustGetGlobal()
+	} else {
+		return configuration.MustGetLast()
+	}
 }

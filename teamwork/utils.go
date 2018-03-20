@@ -15,13 +15,10 @@ var (
 // TeamworkConnection ...
 func TeamworkConnection() *teamwork.Connection {
 
-	twConfig, err := configuration.GetTeamworkConfig()
-	if err != nil {
-		log.Fatal(err)
-	}
+	twConfig := configuration.MustGetTeamworkConfig()
 
 	// setup the teamwork connection
-	conn, err := teamwork.Connect(twConfig.ApiKey)
+	conn, err := teamwork.Connect(twConfig.APIKey)
 	if err != nil {
 		log.Fatal(err)
 		os.Exit(1)
