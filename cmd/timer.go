@@ -30,15 +30,17 @@ var listCmd = &cobra.Command{
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 
+		configuration.UpdateAllTimers()
+
 		var runningLines []string
 		var stoppedLines []string
 
 		for _, timer := range configuration.GetAllTimers() {
 			dur := util.DurationToString(timer.CalculateDuration())
 
-			if timer.Running {
+			if timer.IsRunning() {
 				runningLines = append(runningLines, fmt.Sprintf("Timer %s has been running for %s", timer.Name, dur))
-			} else if !timer.Running {
+			} else if !timer.IsRunning() {
 				stoppedLines = append(stoppedLines, fmt.Sprintf("Timer %s ran for %s", timer.Name, dur))
 			}
 		}

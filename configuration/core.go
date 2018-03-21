@@ -45,14 +45,6 @@ type TodoConfig struct {
 	Description string
 }
 
-type TimerConfig struct {
-	Name     string
-	Running  bool
-	Start    time.Time
-	Duration time.Duration
-	Favorite string
-}
-
 func MustGetLast() *Configuration {
 	if len(Configs) == 0 {
 		log.Fatal("No configurations found")

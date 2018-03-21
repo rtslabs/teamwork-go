@@ -69,8 +69,6 @@ func Overwrite(in interface{}, out interface{}) {
 			}
 		case reflect.Struct:
 			Overwrite(inField.Addr().Interface(), outField.Addr().Interface())
-		default:
-			log.Println("here", in, out, inField.Type().Kind(), inField)
 
 		}
 		if inField.Type() == reflect.TypeOf("") {

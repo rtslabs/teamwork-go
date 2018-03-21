@@ -35,6 +35,15 @@ func InitConfig(override string) {
 	}
 }
 
+func WriteAllConfigs() (err error) {
+	for _, conf := range Configs {
+		if err = WriteConfig(&conf); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func WriteConfig(config *Configuration) (err error) {
 
 	// change extension and delete the old one
