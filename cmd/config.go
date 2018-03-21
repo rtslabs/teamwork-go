@@ -108,12 +108,9 @@ var getTeamworkAPIKeyCmd = &cobra.Command{Use: "api-key", Short: "Get teamwork a
 var setCmd = &cobra.Command{
 	Use:   "set",
 	Short: "Set config parameters to the current working project config",
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("set called")
-	},
 }
 
-var teamworkSetCmd = &cobra.Command{
+var setTeamworkCmd = &cobra.Command{
 	Use:   "teamwork",
 	Short: "Set teamwork related config",
 }
@@ -154,9 +151,9 @@ func init() {
 	getTeamworkCmd.AddCommand(getTeamworkAPIKeyCmd)
 
 	configCmd.AddCommand(setCmd)
-	setCmd.AddCommand(teamworkSetCmd)
-	teamworkSetCmd.AddCommand(setTeamworkSiteCmd)
-	teamworkSetCmd.AddCommand(setTeamworkAPIKeyCmd)
+	setCmd.AddCommand(setTeamworkCmd)
+	setTeamworkCmd.AddCommand(setTeamworkSiteCmd)
+	setTeamworkCmd.AddCommand(setTeamworkAPIKeyCmd)
 
 	setCmd.PersistentFlags().BoolVarP(&initConf, "init", "i", false, "Initialize a config in the cwd (defaults to false)")
 
