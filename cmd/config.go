@@ -11,6 +11,7 @@ import (
 	"path/filepath"
 	"log"
 	"github.com/rtslabs/teamwork-go/util"
+	"github.com/mitchellh/go-homedir"
 )
 
 var (
@@ -53,7 +54,13 @@ var initCmd = &cobra.Command{
 		fileType = strings.TrimPrefix(fileType, ".")
 
 		path := "."
-		if len(args) > 0 {
+		if global {
+			var err error
+			path, err = homedir.Dir()
+			if err != nil {
+				log.Fatal("Unable to find home directory", err)
+			}
+		} else if len(args) > 0 {
 			path = strings.Join(args, " ")
 		}
 
