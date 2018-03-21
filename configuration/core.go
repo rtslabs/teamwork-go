@@ -5,6 +5,7 @@ import (
 	"github.com/rtslabs/teamwork-go/util"
 	"log"
 	"os"
+	"time"
 )
 
 // config per directory - ordered from home and / to current
@@ -15,6 +16,7 @@ type Configuration struct {
 	FileType  string
 	Teamwork  TeamworkConfig
 	TodoItems []TodoConfig
+	Timers    []TimerConfig
 	Favorites []FavoriteConfig
 	Defaults  FavoriteConfig
 }
@@ -31,7 +33,7 @@ type FavoriteConfig struct {
 	TaskListId string
 	ProjectId  string
 	Message    string
-	Time       string
+	Duration   string
 	Billable   string
 }
 
@@ -43,11 +45,19 @@ type TodoConfig struct {
 	Description string
 }
 
+type TimerConfig struct {
+	Name     string
+	Running  bool
+	Start    time.Time
+	Duration time.Duration
+	Favorite string
+}
+
 func MustGetLast() *Configuration {
 	if len(Configs) == 0 {
 		log.Fatal("No configurations found")
 	}
-	return &Configs[len(Configs) - 1]
+	return &Configs[len(Configs)-1]
 }
 
 func MustGetGlobal() *Configuration {
@@ -100,14 +110,14 @@ func GetFavorite(name string) (favorite FavoriteConfig, err error) {
 }
 
 // return favorite config object found by name
-func MustGetTeamworkConfig(global bool) (config* TeamworkConfig) {
+func MustGetTeamworkConfig(global bool) (config *TeamworkConfig) {
 
 	if global {
 		return &MustGetLast().Teamwork
 	}
 
 	for i := range Configs {
-		conf := &Configs[len(Configs) - i - 1]
+		conf := &Configs[len(Configs)-i-1]
 		if util.NotBlank(conf.Teamwork.SiteName) && util.NotBlank(conf.Teamwork.APIKey) {
 			return &conf.Teamwork
 		}

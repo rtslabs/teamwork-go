@@ -8,6 +8,9 @@ import (
 	"gopkg.in/yaml.v2"
 	"errors"
 	"strings"
+	"time"
+	"fmt"
+	"math"
 )
 
 func Contains(s []string, e string) bool {
@@ -90,4 +93,26 @@ func ToString(value interface{}, format string) (str string, err error) {
 	}
 
 	return string(data[:]), err
+}
+
+func DurationToString(duration time.Duration) string {
+
+	hours := math.Floor(duration.Hours())
+	minutes := math.Floor(duration.Minutes())
+
+	if hours > 0 {
+		return fmt.Sprintf("%dm", minutes)
+	} else {
+		return fmt.Sprintf("%dh %dm", hours, minutes)
+	}
+}
+
+func StringToDuration(str string) (time.Duration, error) {
+	return time.ParseDuration(strings.Replace(str, " ", "", -1))
+}
+
+func PrintLines(lines []string) {
+	for _, line := range lines {
+		fmt.Println(line)
+	}
 }

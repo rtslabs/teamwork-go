@@ -6,33 +6,64 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
+	"github.com/rtslabs/teamwork-go/configuration"
+	"github.com/rtslabs/teamwork-go/util"
+)
+
+var (
+	// list options
+	running bool
+	stopped bool
 )
 
 // timerCmd represents the timer command
 var timerCmd = &cobra.Command{
 	Use:   "timer",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+	Short: "",
+	Long:  ``,
+}
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+// listCmd represents the list command
+var listCmd = &cobra.Command{
+	Use:   "list",
+	Short: "Lists all of today's timers",
+	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("timer called")
+
+		var runningLines []string
+		var stoppedLines []string
+
+		for _, timer := range configuration.GetAllTimers() {
+			dur := util.DurationToString(timer.CalculateDuration())
+
+			if timer.Running {
+				runningLines = append(runningLines, fmt.Sprintf("Timer %s has been running for %s", timer.Name, dur))
+			} else if !timer.Running {
+				stoppedLines = append(stoppedLines, fmt.Sprintf("Timer %s ran for %s", timer.Name, dur))
+			}
+		}
+
+		if !running && len(stoppedLines) > 0 {
+			fmt.Println("Stopped:")
+			util.PrintLines(stoppedLines)
+		}
+
+		if !running && len(stoppedLines) > 0 && !stopped && len(runningLines) > 0 {
+			fmt.Println() // space between
+		}
+
+		if !stopped && len(runningLines) > 0 {
+			fmt.Println("Running:")
+			util.PrintLines(runningLines)
+		}
 	},
 }
 
 // switchCmd represents the switch command
 var switchCmd = &cobra.Command{
 	Use:   "switch",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "",
+	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("switch called")
 	},
@@ -41,13 +72,8 @@ to quickly create a Cobra application.`,
 // startCmd represents the switch command
 var startCmd = &cobra.Command{
 	Use:   "start",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "",
+	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("start called")
 	},
@@ -56,31 +82,22 @@ to quickly create a Cobra application.`,
 // stopCmd represents the switch command
 var stopCmd = &cobra.Command{
 	Use:   "stop",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "",
+	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("stop called")
 	},
 }
 
 func init() {
+
+	timerCmd.AddCommand(listCmd)
+	listCmd.Flags().BoolVarP(&running, "running", "r", false, "Display only currently running timers")
+	listCmd.Flags().BoolVarP(&stopped, "stopped", "s", false, "Display only currently stopped timers")
+
 	timerCmd.AddCommand(switchCmd)
 	timerCmd.AddCommand(startCmd)
 	timerCmd.AddCommand(stopCmd)
+
 	RootCmd.AddCommand(timerCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// timerCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// timerCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
