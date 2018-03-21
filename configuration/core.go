@@ -3,45 +3,70 @@ package configuration
 import (
 	"errors"
 	"github.com/rtslabs/teamwork-go/util"
-	"reflect"
+	"log"
+	"os"
 )
 
-// config per directory
+// config per directory - ordered from home and / to current
 var Configs []Configuration
 
 type Configuration struct {
 	Location  string
-	Teamwork  TeamworkConfig   `mapstructure:"teamwork"`
-	Favorites []FavoriteConfig `mapstructure:"favorites"`
-	TodoItems []TodoConfig     `mapstructure:"todoItems"`
+	FileType  string
+	Teamwork  TeamworkConfig
+	TodoItems []TodoConfig
+	Favorites []FavoriteConfig
+	Defaults  FavoriteConfig
 }
 
 type TeamworkConfig struct {
-	SiteName string `mapstructure:"siteName"`
-	ApiKey   string `mapstructure:"apiKey"`
-	UserId   string `mapstructure:"userId"`
+	SiteName string
+	APIKey   string
+	UserId   string
 }
 
 type FavoriteConfig struct {
-	Name       string `mapstructure:"name"`
-	TaskId     string `mapstructure:"taskId"`
-	TaskListId string `mapstructure:"taskListId"`
-	ProjectId  string `mapstructure:"projectId"`
-	Message    string `mapstructure:"message"`
-	Hours      int    `mapstructure:"hours"`
-	Minutes    int    `mapstructure:"minutes"`
-	Billable   bool   `mapstructure:"billable"`
+	Name       string
+	TaskId     string
+	TaskListId string
+	ProjectId  string
+	Message    string
+	Time       string
+	Billable   string
 }
 
 type TodoConfig struct {
-	Name        string `mapstructure:"name"`
-	TaskId      string `mapstructure:"taskId"`
-	ProjectId   string `mapstructure:"projectId"`
-	DueDate     string `mapstructure:"dueDate"`
-	Description string `mapstructure:"description"`
+	Name        string
+	TaskId      string
+	ProjectId   string
+	DueDate     string
+	Description string
 }
 
-const FILENAME = ".teamworkgo"
+func MustGetLast() *Configuration {
+	if len(Configs) == 0 {
+		log.Fatal("No configurations found")
+	}
+	return &Configs[len(Configs) - 1]
+}
+
+func MustGetGlobal() *Configuration {
+	if len(Configs) == 0 {
+		log.Fatal("No configurations found")
+	}
+	return &Configs[0]
+}
+
+func InitConfigDir(absPath, extension string) error {
+	fileName := absPath + "/" + FILENAME + "." + extension
+
+	if _, err := os.Stat(fileName); err == nil {
+		log.Fatal("file " + fileName + " already exists")
+	}
+
+	newConfig := Configuration{Location: fileName, FileType: extension}
+	return WriteConfig(&newConfig)
+}
 
 // return todos from all configs
 func GetFullTodoList() (todos []TodoConfig) {
@@ -53,48 +78,40 @@ func GetFullTodoList() (todos []TodoConfig) {
 
 // return favorite config object found by name
 func GetFavorite(name string) (favorite FavoriteConfig, err error) {
+
+	found := false
+	for _, config := range Configs {
+		util.Overwrite(&config.Defaults, &favorite)
+	}
 	for _, config := range Configs {
 		for _, fav := range config.Favorites {
-			if fav.Name == name {
-				return fav, nil
+			if name == fav.Name {
+				util.Overwrite(&fav, &favorite)
+				found = true
 			}
 		}
 	}
-	return FavoriteConfig{Name: name}, errors.New("Unable to find favorite " + name)
+
+	if !found {
+		err = errors.New("favorite not found")
+	}
+
+	return favorite, err
 }
 
 // return favorite config object found by name
-func GetTeamworkConfig() (config TeamworkConfig, err error) {
-	for _, conf := range Configs {
-		if util.NotBlank(conf.Teamwork.SiteName) && util.NotBlank(conf.Teamwork.ApiKey) {
-			return conf.Teamwork, nil
+func MustGetTeamworkConfig(global bool) (config* TeamworkConfig) {
+
+	if global {
+		return &MustGetLast().Teamwork
+	}
+
+	for i := range Configs {
+		conf := &Configs[len(Configs) - i - 1]
+		if util.NotBlank(conf.Teamwork.SiteName) && util.NotBlank(conf.Teamwork.APIKey) {
+			return &conf.Teamwork
 		}
 	}
-	return TeamworkConfig{}, errors.New("Unable to find valid teamwork config")
-}
-
-// TODO get working
-func overwrite(in interface{}, out interface{}) {
-
-	t := reflect.TypeOf(in)
-
-	inPtr := reflect.ValueOf(in)
-
-	out2 := reflect.New(reflect.TypeOf(out))
-	outPtr := reflect.ValueOf(out2)
-
-	for i := 0; i < t.NumField(); i++ {
-
-		// Ignore fields that don't have the same type as a string
-		if t.Field(i).Type != reflect.TypeOf("") {
-			continue
-		}
-
-		inField := inPtr.Field(i)
-		str := inField.Interface().(string)
-		if util.NotBlank(str) {
-			outField := outPtr.Field(i)
-			outField.SetString(str)
-		}
-	}
+	log.Fatal("unable to find valid teamwork config")
+	return nil
 }

@@ -4,21 +4,21 @@ import (
 	"log"
 	"os"
 
-	"github.com/spf13/viper"
 	"github.com/swill/teamwork"
+	"github.com/rtslabs/teamwork-go/configuration"
 )
 
 var (
-	conn       *teamwork.Connection
+	conn *teamwork.Connection
 )
-
 
 // TeamworkConnection ...
 func TeamworkConnection() *teamwork.Connection {
-	apiToken := viper.GetString("global.apiKey")
+
+	twConfig := configuration.MustGetTeamworkConfig()
 
 	// setup the teamwork connection
-	conn, err := teamwork.Connect(apiToken)
+	conn, err := teamwork.Connect(twConfig.APIKey)
 	if err != nil {
 		log.Fatal(err)
 		os.Exit(1)

@@ -4,14 +4,19 @@ import (
 	"regexp"
 	"fmt"
 	"os"
-	"github.com/spf13/viper"
 	"strings"
 	"path/filepath"
 	"github.com/mitchellh/go-homedir"
 	"github.com/rtslabs/teamwork-go/util"
+	"encoding/json"
+	"io/ioutil"
+	"gopkg.in/yaml.v2"
+	"errors"
 )
 
-var fileRegex = regexp.MustCompile(".*\\.teamworkgo\\.(yaml|yml|json)$")
+const FILENAME = ".teamworkgo"
+
+var fileRegex = regexp.MustCompile("^\\.teamworkgo\\.(yaml|yml|json)$")
 var fileTypeRegex = regexp.MustCompile(`[^.]+$`)
 
 func InitConfig(override string) {
@@ -30,34 +35,60 @@ func InitConfig(override string) {
 	}
 }
 
-func readConfig(file string) (config Configuration, err error) {
+func WriteConfig(config *Configuration) (err error) {
 
-	if fileReader, e := os.Open(file); e == nil {
-
-		viper.SetConfigName(FILENAME)
-
-		for _, match := range fileTypeRegex.FindAllString(file, -1) {
-			viper.SetConfigType(match)
-		}
-
-		viper.ReadConfig(fileReader)
-
-		if unmarshalErr := viper.Unmarshal(&config); unmarshalErr != nil {
-			fmt.Println("Error reading config file", file, err)
-			err = unmarshalErr
-		}
-
-		fileReader.Close()
-	} else {
-		err = e
-		fmt.Println("Error opening config file", file, err)
+	// change extension and delete the old one
+	if !strings.HasSuffix(config.Location, config.FileType) {
+		os.Remove(config.Location)
+		current := filepath.Ext(config.Location)
+		naked := strings.TrimSuffix(config.Location, current)
+		config.Location = naked + "." + config.FileType
 	}
-	config.Location = file
-	return config, err
+
+	var data []byte
+	switch config.FileType {
+	case "json":
+		data, err = json.MarshalIndent(config, "", "  ")
+	case "yml", "yaml":
+		data, err = yaml.Marshal(config)
+	default:
+		err = errors.New("unrecognized file type: " + config.FileType)
+	}
+
+	if err == nil {
+		err = ioutil.WriteFile(config.Location, data, 0644)
+	}
+
+	return err
 }
 
-/*Parse populates the viper instance walking through the passed paths, loading any
-files found in the directory.  It silently ignores any errors (bad files, etc)*/
+func readConfig(file string) (config Configuration, err error) {
+
+	if fileData, err := ioutil.ReadFile(file); err == nil {
+
+		config.FileType = "json"
+		for _, match := range fileTypeRegex.FindAllString(file, -1) {
+			config.FileType = strings.ToLower(match)
+		}
+
+		switch config.FileType {
+		case "json":
+			err = json.Unmarshal(fileData, &config)
+		case "yml", "yaml":
+			err = yaml.Unmarshal(fileData, &config)
+		default:
+			err = errors.New("unrecognized file type: " + config.FileType)
+		}
+	}
+
+	if err != nil {
+		fmt.Println("error opening config file", file, err)
+	}
+
+	config.Location = file
+	return config, nil
+}
+
 func readFileConfigs(files []string) (configs []Configuration) {
 
 	for _, file := range files {
@@ -79,7 +110,8 @@ func getConfigsFromDirs(dirs []string) (files []string) {
 				return err
 			}
 			if !i.IsDir() {
-				if fileRegex.MatchString(p) {
+				_, fileName := filepath.Split(p)
+				if fileRegex.MatchString(fileName) {
 					formatted := strings.Replace(p, "\\", "/", -1)
 					files = append(files, formatted)
 				}
@@ -96,27 +128,29 @@ func getConfigsFromDirs(dirs []string) (files []string) {
 }
 
 // gets a list of config directories in the order they should be read
-func getConfigDirs() []string {
+// ordered from home to current
+func getConfigDirs() (dirs []string) {
 
-	var dirs []string
-	if path, err := os.Getwd(); err == nil {
-		for path != "/" {
-			dirs = append(dirs, path)
-			path = filepath.Dir(path)
-		}
-		dirs = append(dirs, "/")
-	} else {
-		fmt.Println("Unable to find working directory for configs")
-	}
-
-	if home, err := homedir.Dir(); err == nil {
-		if !util.Contains(dirs, home) {
-			dirs = append(dirs, home)
-		}
-	} else {
+	home, err := homedir.Dir()
+	if err != nil {
 		fmt.Println("Unable to find home directory for configs")
+		home = "."
 	}
 
+	path, err := os.Getwd()
+	if err != nil {
+		fmt.Println("Unable to find working directory for configs")
+		path = home
+	}
+
+	lastPath := "notarealpath"
+	for path != lastPath && path != home {
+		dirs = append(dirs, path)
+		lastPath = path
+		path = filepath.Dir(path)
+	}
+
+	dirs = append(dirs, home)
 	util.Reverse(dirs)
 
 	return dirs
