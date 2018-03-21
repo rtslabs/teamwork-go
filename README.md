@@ -6,7 +6,7 @@ teamwork-go is a cli to interact with [Teamwork](https://www.teamwork.com/) time
 
 * Download the latest release from the [releases page](https://github.com/rtslabs/teamwork-go/releases) and unzip.
 * Copy the `teamwork-go` binary to a location in your path `sudo cp teamwork-go /usr/local/bin/`
-* Create a config file (this can be skipped if you prefer to use command line flags):
+* Create a [config file](docs/example.teamworkgo.yaml):
 
     ```bash
     cat <<EOF > ~/.teamworkgo.yaml
@@ -37,111 +37,5 @@ been
 
 * Architecture
 
-    To edit architecture diagrame open the [architecture](architecture.mapz) file in [Labyrinth](https://people.gnome.org/~dscorgie/labyrinth.html)
-    ![arch:](architecture2.png)
-
-
-```
-favorite {
-    name,
-    taskId,
-    taskListid,
-    projectId,
-    date,
-    message,
-    hours,
-    minutes,
-    billable
-}
-
-todo {
-    name,
-    taskId,
-    projectId,
-    due-date,
-    description
-}
-
-
-hours tw stats [summary]
-    --date [date/year/month/week/day]
-    --favorite
-
-hours tw stats weights
-    --used-since [date/year/month/week/day]
-    --used-before [date]
-    --used-on [date]
-
-hours tw show entries
-hours tw show tasks
-hours tw show projects
-hours tw show taskLists
-    --used-since [date/year/month/week/day]
-    --used-before [date]
-    --used-on [date]
-    --assigned
-    --tags
-    --favorite
-
-hours tw create task
-hours tw create taskLists
-    --stuff
-
-hours tw log <taskId/favorite>
-    -- [ all of favorites ]
-    --favorite
-    --json opens editor
-    --previous
-    --git-logs
-
-tw edit <entryId>
-    ^^
-hours show favorites
-    --favorite
-
-hours favorite <name>
-    --^^
-
-hours config [<key>[=<value>]]
-    --dir
-    (key, url, google key)
-hours config init
-    --dir
-
-hours timer start <name>
-    --arrived
-
-hours timer stop <name>
-hours timer switch <name>
-
-hours timer time <name>
-    --start
-    --stop
-    --duration
-    --stop-all
-
-hours todo add <name>
-hours todo complete <name>
-    --^^
-
-
-global flags
-    --json
-
-The pattern to follow is APPNAME VERB NOUN --ADJECTIVE. or APPNAME COMMAND ARG --FLAG
-
-
-src
-    main.go
-    cmd
-        config
-            ... .go
-        timer
-        ...
-    configuration
-        favorites
-    teamwork
-    googlecal
-    status
-    interactive
-```
+    To edit architecture diagrame open the [architecture](docs/design/architecture.mapz) file in [Labyrinth](https://people.gnome.org/~dscorgie/labyrinth.html)
+    ![arch:](docs/design/architecture2.png)
